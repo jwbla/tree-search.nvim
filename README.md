@@ -25,14 +25,34 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
   "jwbla/search-tree.nvim",
   config = function()
     require("search-tree").setup({
+      -- Keybinding to trigger search (set to nil to disable)
       keymap = "<leader>pt",
+      
+      -- Window configuration
       window = {
-        position = "float", -- or "split"
-        width = 0.8,
-        height = 0.8,
+        -- Window display mode: "float" (centered popup) or "split" (side panel)
+        position = "float",
+        
+        -- Window size as fraction of screen (0.0 to 1.0)
+        -- For float: both width and height are used
+        -- For split: width used for vertical splits, height for horizontal splits
+        width = 0.8,   -- 80% of screen width
+        height = 0.8,  -- 80% of screen height
+        
+        -- Split position: "left" or "right" (only used when position = "split")
+        split_position = "right",
       },
+      
+      -- Ripgrep search options
       ripgrep = {
+        -- Case sensitive search (default: false)
         case_sensitive = false,
+        
+        -- Filter by file type (nil = all files, or specify like "lua", "py", etc.)
+        file_types = nil,
+        
+        -- Glob patterns to exclude from search (empty table = no exclusions)
+        exclude_patterns = {},
       }
     })
   end
@@ -74,26 +94,86 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ## Configuration
 
+All configuration options with their defaults and descriptions:
+
 ```lua
 require("search-tree").setup({
-  keymap = "<leader>pt",  -- Keybinding to trigger search
+  -- ============================================================================
+  -- KEYBINDING
+  -- ============================================================================
+  -- Keybinding to trigger the search tree
+  -- Set to nil to disable the keybinding (you can still use :SearchTree command)
+  -- Default: "<leader>pt"
+  keymap = "<leader>pt",
+  
+  -- ============================================================================
+  -- WINDOW CONFIGURATION
+  -- ============================================================================
   window = {
-    position = "float",    -- "float" or "split"
-    width = 0.8,           -- Window width (0.0 to 1.0)
-    height = 0.8,          -- Window height (0.0 to 1.0)
-    split_position = "right", -- For split mode: "left" or "right"
+    -- Window display mode
+    --   "float" - Centered floating window (default)
+    --   "split" - Split window (side panel)
+    -- Default: "float"
+    position = "float",
+    
+    -- Window dimensions as fraction of screen size (0.0 to 1.0)
+    -- For "float" mode: both width and height are used
+    -- For "split" mode: width is used for vertical splits (left/right)
+    -- Default: 0.8 (80% of screen)
+    width = 0.8,
+    height = 0.8,
+    
+    -- Split window position (only used when position = "split")
+    --   "right" - Open split on the right side (default)
+    --   "left"  - Open split on the left side
+    -- Default: "right"
+    split_position = "right",
   },
+  
+  -- ============================================================================
+  -- RIPGREP SEARCH OPTIONS
+  -- ============================================================================
   ripgrep = {
-    case_sensitive = false, -- Case sensitive search
-    file_types = nil,       -- File type filter (e.g., "lua", "py")
-    exclude_patterns = {    -- Glob patterns to exclude from search
-      "**/libs/*",         -- Exclude any files in libs directories anywhere
-      "**/*.tmp",          -- Exclude any .tmp files anywhere
-      "*.xfi",             -- Exclude .xfi files at project root
+    -- Enable case-sensitive search
+    --   false - Case insensitive (default)
+    --   true  - Case sensitive
+    -- Default: false
+    case_sensitive = false,
+    
+    -- Filter search results by file type
+    --   nil   - Search all file types (default)
+    --   "lua" - Only search Lua files
+    --   "py"  - Only search Python files
+    --   etc.
+    -- Default: nil
+    file_types = nil,
+    
+    -- Glob patterns to exclude files/directories from search
+    -- Patterns follow ripgrep's glob syntax (see Exclude Patterns section below)
+    -- Default: {} (no exclusions)
+    exclude_patterns = {
+      "**/libs/*",    -- Exclude any files in libs directories anywhere
+      "**/*.tmp",     -- Exclude any .tmp files anywhere
+      "*.xfi",        -- Exclude .xfi files at project root
+      "node_modules", -- Exclude node_modules directory
+      ".git",         -- Exclude .git directory
     },
   },
 })
 ```
+
+### Minimal Configuration
+
+If you want to use all defaults, you can call setup with an empty table:
+
+```lua
+require("search-tree").setup({})
+```
+
+This will use:
+- Keybinding: `<leader>pt`
+- Window: Float mode, 80% width/height
+- Search: Case insensitive, all file types, no exclusions
 
 ## Tree View Format
 
